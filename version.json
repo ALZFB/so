@@ -1,8 +1,8 @@
 {
-  "代码": 200,
-  "数据": {
-    "版本": 2,
-    "URL": "https://raw.gitmirror.com/ALZFB/so/main/libWH.so",
+  "code": 200,
+  "data": {
+    "version": 2,
+    "url": "https://cdn.jsdelivr.net/gh/ALZFB/so@main/libWH.so",
     "sha256": ""
   }
 }
