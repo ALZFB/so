@@ -1,0 +1,37 @@
+name: Update SO Version
+on:
+  push:
+    paths:
+      - 'libWH.so'
+
+permissions:
+  contents: write
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Calculate SHA-256
+        run: |
+          HASH=$(sha256sum libWH.so | awk '{print $1}')
+          echo "Calculated SHA256: $HASH"
+          echo "HASH=$HASH" >> $GITHUB_ENV
+
+      - name: Update version.json
+        run: |
+          OLD_VER=$(jq '.data.version' version.json)
+          NEW_VER=$((OLD_VER + 1))
+          echo "Bumping version from $OLD_VER to $NEW_VER"
+          
+          jq --arg ver "$NEW_VER" --arg hash "$HASH" \
+             '.data.version = ($ver | tonumber) | 
+              .data.url = "https://cdn.jsdelivr.net/gh/ALZFB/so@main/libWH.so?v=" + $ver |
+              .data.sha256 = $hash' version.json > tmp.json && mv tmp.json version.json
+
+      - name: Commit and Push
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Auto update version to latest SO"
